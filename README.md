@@ -13,7 +13,7 @@ to your `composer.json` file:
 ```json
 {
     "require": {
-        "th3third/omnipay-payflow-extended": "dev-master"
+        "maxcri/omnipay-payflow-extended": "dev-master"
     }
 }
 ```

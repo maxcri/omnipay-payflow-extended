@@ -1,56 +1,76 @@
 <?php 
 
-    namespace Omnipay\PayflowExtended\Message;
+namespace Omnipay\PayflowExtended\Message;
 
-    use Omnipay\Payflow\Message\AuthorizeRequest;
+use Omnipay\Payflow\Message\AuthorizeRequest;
+
+
+/**
+ * Payflow Recurring Billing Add Profile Request
+ */
+class RecurringProfileInquiryRequest extends AuthorizeRequest {
+
+
+    protected $trxtype = 'R';
+
+
+    protected $action = 'I'; // A-Add, M-Modify, R-Reactivate, C-Cancel, I-Inquiry, P-Retry failed pmt
+
+
+
+    public function getProfileID()
+    {
+        return $this->getParameter('profileID');
+    }
+
+
+
+    public function setProfileID($value)
+    {
+        return $this->setParameter('profileID', $value);
+    }
+
+
+
+    protected function getBaseData()
+    {
+        $data = array();
+        $data['TRXTYPE'] = $this->trxtype;
+        $data['USER'] = $this->getUsername();
+        $data['PWD'] = $this->getPassword();
+        $data['VENDOR'] = $this->getVendor();
+        $data['PARTNER'] = $this->getPartner();
+        $data['ACTION'] = $this->action;
+        $data['TENDER'] = 'C';
+
+        return $data;
+    }
+
+
+
+    public function getData()
+    {
+        $data = $this->getBaseData();
+
+        $data['ORIGPROFILEID'] = $this->getProfileID();
+
+        return $data;
+    }
+
 
     /**
-     * Payflow Recurring Billing Add Profile Request
+     * @param $data
+     * @return \Omnipay\Common\Message\ResponseInterface|\Omnipay\Payflow\Message\Response|RecurringProfileInquiryResponse
+     * @throws \Omnipay\Common\Exception\InvalidResponseException
      */
-    class RecurringProfileInquiryRequest extends AuthorizeRequest
-    {
-        protected $trxtype = 'R'; 
-        protected $action = 'I'; // A-Add, M-Modify, R-Reactivate, C-Cancel, I-Inquiry, P-Retry failed pmt
+    public function sendData($data) {
 
-        public function getProfileID()
-        {
-            return $this->getParameter('profileID');
-        }
+        // $httpResponse = $this->httpClient->post($this->getEndpoint(), null, $this->encodeData($data))->send();
+        $httpResponse = $this->httpClient->request('POST', $this->getEndpoint(), [], http_build_query($data));
 
-        public function setProfileID($value)
-        {
-            return $this->setParameter('profileID', $value);
-        }
-
-        protected function getBaseData()
-        {
-            $data = array();
-            $data['TRXTYPE'] = $this->trxtype;
-            $data['USER'] = $this->getUsername();
-            $data['PWD'] = $this->getPassword();
-            $data['VENDOR'] = $this->getVendor();
-            $data['PARTNER'] = $this->getPartner();
-            $data['ACTION'] = $this->action;
-            $data['TENDER'] = 'C';
-
-            return $data;
-        }
-
-        public function getData()
-        {
-            $data = $this->getBaseData();
-
-            $data['ORIGPROFILEID'] = $this->getProfileID();
-            
-            return $data;
-        }
-
-        public function sendData($data)
-        {
-            $httpResponse = $this->httpClient->post($this->getEndpoint(), null, $this->encodeData($data))->send();
-
-            return $this->response = new RecurringProfileInquiryResponse($this, $httpResponse->getBody());
-        }
-
-
+        // return $this->response = new RecurringProfileInquiryResponse($this, $httpResponse->getBody());
+        return $this->response = new RecurringProfileInquiryResponse($this, $httpResponse->getBody()->getContents());
     }
+
+
+}

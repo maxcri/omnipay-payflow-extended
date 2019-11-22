@@ -2,6 +2,8 @@
 
 **Payflow Extended driver with recurring payment support for the Omnipay PHP payment processing library**
 
+**Upgrade from version 2 to 3**
+
 [Omnipay](https://github.com/thephpleague/omnipay) is a framework agnostic, multi-gateway payment
 processing library for PHP 5.3+. This package adds additional recurring payment options for the Payflow extension.
 
@@ -12,6 +14,13 @@ to your `composer.json` file:
 
 ```json
 {
+    "repositories": {
+        "omnipay-payflow-extended": {
+            "type": "path",
+            "url": "../repos/omnipay-payflow-extended"
+        }        
+    },
+        
     "require": {
         "maxcri/omnipay-payflow-extended": "dev-master"
     }
